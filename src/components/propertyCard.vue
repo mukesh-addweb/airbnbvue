@@ -5,7 +5,7 @@
     <h4><b>{{ demodata.name }}</b></h4>
     <p>{{demodata.address}}</p>
     <p>{{demodata.description}}</p>
-    <button>Book property</button>
+    <button @click="$emit('bookProperty', demodata)" v-if="isLoggedIn">Book property</button>
   </div>
 </div>
 </template>
@@ -15,6 +15,7 @@ export default {
   name: 'propertyCard',
   props:{
       demodata: Object,
+      isLoggedIn: Boolean,
   }
 }
 </script>

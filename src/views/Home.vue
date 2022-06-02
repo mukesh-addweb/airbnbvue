@@ -1,35 +1,37 @@
 <template>
   <div class="home">
     <div class="header">
-      <button @click="showRegister = !showRegister">Register</button>
-      <button @click="showLogin = !showLogin">login</button>
-      <button @click="showAddProperty = !showAddProperty">Add Property</button>
+      <button @click="showRegister = !showRegister" v-if="!isLoggedIn">Register</button>
+      <button @click="showLogin = !showLogin" v-if="!isLoggedIn">login</button>
+      <button @click="showAddProperty = !showAddProperty" v-if="isLoggedIn">Add Property</button>
+      <button @click="showBookedProperties = !showBookedProperties" v-if="isLoggedIn">Booked Properties</button>
+      <button @click="isLoggedIn = false" v-if="isLoggedIn">LogOut</button>
     </div>
 
-
+<p v-if="isLoggedIn && userInfo && userInfo.name">{{userInfo.name}}</p>
 
     <!-- //login components -->
-    <div class="Register" v-if="showRegister">
-      <form action="action_page.php">
+    <div class="Register" v-if="showRegister && !isLoggedIn">
+      <form action="action_page.php" @submit.prevent='registerUser'>
   <div class="container">
     <h1>Register</h1>
     <p>Please fill in this form to create an account.</p>
     <hr>
 
     <label for="name"><b>Name</b></label>
-    <input type="text" placeholder="Enter Name" name="name" id="name" required>
+    <input type="text" placeholder="Enter Name" name="name" id="name" required v-model="nName">
 
     <label for="email"><b>Email</b></label>
-    <input type="text" placeholder="Enter Email" name="email" id="email" required>
+    <input type="text" placeholder="Enter Email" name="email" id="email" required v-model="nEmail">
 
     <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="psw" id="psw" required>
+    <input type="password" placeholder="Enter Password" name="psw" id="psw" required v-model="nPassword">
 
-    <label for="psw-repeat"><b>Repeat Password</b></label>
-    <input type="password" placeholder="Repeat Password" name="psw-repeat" id="psw-repeat" required>
-    <hr>
+    <!-- <label for="psw-repeat"><b>Repeat Password</b></label>
+    <input type="password" placeholder="Repeat Password" name="psw-repeat" id="psw-repeat" required v-model="nName">
+    <hr> -->
 
-    <p>By creating an account you agree to our <a href="#">Terms & Privacy</a>.</p>
+    <!-- <p>By creating an account you agree to our <a href="#">Terms & Privacy</a>.</p> -->
     <button type="submit" class="registerbtn">Register</button>
   </div>
 
@@ -42,18 +44,18 @@
 
 <!-- login form -->
 
-<div class="Login" v-if="showLogin">
-      <form action="action_page.php">
+<div class="Login" v-if="showLogin && !isLoggedIn">
+      <form action="action_page.php" @submit.prevent='loginUser'>
   <div class="container">
     <h1>Login</h1>
     <p>Please fill in this form to login</p>
     <hr>
 
     <label for="email"><b>Email</b></label>
-    <input type="text" placeholder="Enter Email" name="email" id="email" required>
+    <input type="text" placeholder="Enter Email" name="email" id="email" required v-model="uEmail">
 
     <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="psw" id="psw" required>
+    <input type="password" placeholder="Enter Password" name="psw" id="psw" required v-model="uPassword">
 
     <!-- <p>By creating an account you agree to our <a href="#">Terms & Privacy</a>.</p> -->
     <button type="submit" class="registerbtn">Login</button>
@@ -68,7 +70,7 @@
 
 <!-- add property form -->
 
-<div class="Register" v-if="showAddProperty" @submit.prevent="addProperty">
+<div class="Register" v-if="showAddProperty && isLoggedIn" @submit.prevent="addProperty">
       <form action="action_page.php">
   <div class="container">
     <h1>Add Property</h1>
@@ -99,9 +101,18 @@
 
 <!-- dashboard -->
 
-<div v-if="showProperty">
+<div v-if="showProperty && !showBookedProperties">
   <div class="properties">
-    <property-card :demodata='property' v-for="(property,index) in demodata" :key="index" />
+    <property-card :demodata='property' v-for="(property,index) in demodata" :key="index" :isLoggedIn='isLoggedIn' @bookProperty='bookProperty' />
+  </div>
+</div>
+
+<!-- booked properties -->
+<div v-if="showBookedProperties && isLoggedIn">
+  <div class="properties">
+  <template v-for="(propertyInfo,index) in bookedProperties" :key="index">
+    <property-card :demodata='propertyInfo.property' :isLoggedIn='false' @bookProperty='bookProperty' v-if="propertyInfo.userInfo.email == userInfo.email" />
+  </template>
   </div>
 </div>
   </div>
@@ -112,6 +123,7 @@
 import HelloWorld from '@/components/HelloWorld.vue'
 import propertyCard from '@/components/propertyCard.vue'
 import PropertyCard from '../components/propertyCard.vue'
+// import store from '../store';
 
 export default {
   name: 'Home',
@@ -125,6 +137,9 @@ export default {
       showRegister: false,
       showProperty: true,
       showAddProperty: false,
+      showBookedProperties:false,
+      isLoggedIn: false,
+      userInfo: null,
 
       pName: '',
       pAddress: '',
@@ -139,29 +154,31 @@ export default {
           img: 'https://a0.muscache.com/im/pictures/monet/Select-34444025/original/944d56fa-e9a6-48fb-a9c5-e4e3778042d7?im_w=720',
         },
         {
-          name: 'villa1',
+          name: 'villa2',
           address: '123 lorem ipsum',
           description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
           img: 'https://a0.muscache.com/im/pictures/monet/Select-34444025/original/944d56fa-e9a6-48fb-a9c5-e4e3778042d7?im_w=720',
         },
         {
-          name: 'villa1',
+          name: 'villa3',
           address: '123 lorem ipsum',
           description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
           img: 'https://a0.muscache.com/im/pictures/monet/Select-34444025/original/944d56fa-e9a6-48fb-a9c5-e4e3778042d7?im_w=720',
         },{
-          name: 'villa1',
+          name: 'villa4',
           address: '123 lorem ipsum',
           description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
           img: 'https://a0.muscache.com/im/pictures/monet/Select-34444025/original/944d56fa-e9a6-48fb-a9c5-e4e3778042d7?im_w=720',
         },
         {
-          name: 'villa1',
+          name: 'villa5',
           address: '123 lorem ipsum',
           description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
           img: 'https://a0.muscache.com/im/pictures/monet/Select-34444025/original/944d56fa-e9a6-48fb-a9c5-e4e3778042d7?im_w=720',
         }
-      ]
+      ],
+
+      bookedProperties: []
     }
   },
   
@@ -176,7 +193,39 @@ export default {
       }
       this.demodata.push(property)
       console.log(this.demodata)
-
+      this.showAddProperty = false
+    },
+    registerUser(){
+      const user = {
+        id: this.nName+'Id',
+        name: this.nName,
+        email: this.nEmail,
+        password: this.nPassword,
+      }
+      console.log(this.$store.state.users)
+      this.$store.commit('registerUser', user)
+      this.showRegister = false
+    },
+    loginUser(){
+      const users = this.$store.state.users;
+      console.log(users)
+      const check = users.find(element => element.email == this.uEmail && element.password == this.uPassword);
+      console.log(check)
+      if(check){
+        this.isLoggedIn = true;
+        this.showLogin = false;
+        this.userInfo = check;
+      }
+    },
+    bookProperty(property){
+      console.log('haalo')
+      console.log(property)
+      const bookedProperty = {
+        userInfo: this.userInfo,
+        property,
+      }
+      console.log(bookedProperty)
+      this.bookedProperties.push(bookedProperty)
     }
   }
 }
