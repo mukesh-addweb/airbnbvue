@@ -220,6 +220,7 @@ export default {
       console.log('haalo')
       console.log(property)
       const bookedProperty = {
+        bookingId: property.name + this.userInfo.id,
         userInfo: this.userInfo,
         property,
       }
