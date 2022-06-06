@@ -78,7 +78,7 @@
                 (val) => (val !== null && val !== '') || 'type password',
               ]"
             />
-            <q-input
+            <!-- <q-input
               filled
               v-model="lat"
               label="Latitude"
@@ -97,7 +97,7 @@
               :rules="[
                 (val) => (val !== null && val !== '') || 'type password',
               ]"
-            />
+            /> -->
 
             <q-uploader
               style="max-width: 300px"
@@ -273,10 +273,12 @@ export default defineComponent({
       let arr = JSON.parse(LocalStorage.getItem("property") || "[]");
       let owner = SessionStorage.getItem("user");
       let property = {
+        id: title.value+'Id',
         description: description.value,
         title: title.value,
         lat: lat.value,
         lng: lng.value,
+        ownerId: owner.id,
         owner: owner.email,
       };
       // $q.notify({
@@ -306,6 +308,7 @@ export default defineComponent({
     const onSignUp = () => {
       let arr = JSON.parse(LocalStorage.getItem("user") || "[]");
       let user = {
+        id: name.value+'Id',
         name: name.value,
         email: email.value,
         password: password.value,

@@ -10,8 +10,9 @@
       />
     </div>
   </div>
-  <q-page class="flex flex-center">
+  <q-page class="flexing">
     <div class="q-pa-md row items-start q-gutter-md">
+      {{data}}
       <template v-for="(propertyInfo, index) in data" :key="index">
         <div>
           <hotel-card
@@ -74,4 +75,9 @@ export default defineComponent({
 .my-card
   width: 100%
   max-width: 250px
+
+.flexing
+  display: flex
+  flex-wrap: wrap
+
 </style>
