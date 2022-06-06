@@ -13,6 +13,10 @@ npm install
 ```bash
 quasar dev
 ```
+### if the above command doesn't work try
+```bash
+yarn quasar dev #
+```
 
 
 ### Build the app for production
