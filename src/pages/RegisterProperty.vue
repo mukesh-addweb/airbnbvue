@@ -50,6 +50,7 @@
 import { defineComponent, ref, toRef, unref } from "vue";
 import { LocalStorage, SessionStorage } from "quasar";
 import { data } from "autoprefixer";
+import { useQuasar } from "quasar";
 
 export default {
   name: "RegisterProperty",
@@ -62,6 +63,7 @@ export default {
   },
   methods: {
     onSubmit() {
+      let $q = useQuasar();
       let arr = JSON.parse(LocalStorage.getItem("property") || "[]");
       let owner = SessionStorage.getItem("user");
       let property = {
@@ -69,6 +71,11 @@ export default {
         title: this.title,
         owner: owner.email,
       };
+      // $q.notify({
+      //   position: "top-right",
+      //   message: "successfully create a property",
+      //   timeout: 3000,
+      // });
       // LocalStorage.remove("name");
       arr.push(property);
       LocalStorage.set("property", JSON.stringify(arr));
@@ -79,7 +86,7 @@ export default {
 </script>
 
 <style>
-@import "tailwindcss/base";
+/* @import "tailwindcss/base";
 @import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@import "tailwindcss/utilities"; */
 </style>
