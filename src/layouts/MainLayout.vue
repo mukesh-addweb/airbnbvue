@@ -273,7 +273,7 @@ export default defineComponent({
       let arr = JSON.parse(LocalStorage.getItem("property") || "[]");
       let owner = SessionStorage.getItem("user");
       let property = {
-        id: title.value+'Id',
+        id: title.value + "Id",
         description: description.value,
         title: title.value,
         lat: lat.value,
@@ -290,6 +290,9 @@ export default defineComponent({
       arr.push(property);
       LocalStorage.set("property", JSON.stringify(arr));
       window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
       // this.$router.push("/");
     };
 
@@ -308,7 +311,7 @@ export default defineComponent({
     const onSignUp = () => {
       let arr = JSON.parse(LocalStorage.getItem("user") || "[]");
       let user = {
-        id: name.value+'Id',
+        id: name.value + "Id",
         name: name.value,
         email: email.value,
         password: password.value,

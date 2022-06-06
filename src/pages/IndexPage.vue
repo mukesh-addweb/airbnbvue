@@ -12,7 +12,6 @@
   </div>
   <q-page class="flexing">
     <div class="q-pa-md row items-start q-gutter-md">
-      {{data}}
       <template v-for="(propertyInfo, index) in data" :key="index">
         <div>
           <hotel-card
@@ -60,14 +59,6 @@ export default defineComponent({
       LocalStorage.set("property", JSON.stringify(allprops));
       window.location.reload();
     },
-    setLoading() {
-      setTimeout(() => {
-        this.loading = false;
-      }, 3000);
-    },
-  },
-  mounted() {
-    this.loading = true;
   },
 });
 </script>
@@ -79,5 +70,4 @@ export default defineComponent({
 .flexing
   display: flex
   flex-wrap: wrap
-
 </style>
