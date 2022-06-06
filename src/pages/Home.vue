@@ -5,9 +5,8 @@
       <q-btn color="white" text-color="black" class="q-ma-sm center-btn" @click="showLogin = !showLogin; showRegister=false;" v-if="!isLoggedIn">login</q-btn>
       <q-btn color="white" text-color="black" class="q-ma-sm center-btn" @click="showAddProperty = !showAddProperty" v-if="isLoggedIn">Add Property</q-btn>
       <q-btn color="white" text-color="black" class="q-ma-sm center-btn" @click="showBookedProperties = !showBookedProperties" v-if="isLoggedIn">{{showBookedProperties?'All Properties':'Booked Properties'}}</q-btn>
-      <q-btn color="white" text-color="black" class="q-ma-sm center-btn" @click="isLoggedIn = false" v-if="isLoggedIn">LogOut</q-btn>
+      <q-btn color="white" text-color="black" class="q-ma-sm center-btn" @click="logOut" v-if="isLoggedIn">LogOut</q-btn>
     </div>
-
 <p class="text-center text-h6 q-mt-lg" v-if="isLoggedIn && userInfo && userInfo.name">{{userInfo.name}}</p>
 
     <!-- register components -->
@@ -121,7 +120,10 @@
 <script>
 // @ is an alias to /src
 // import propertyCard from '@/components/propertyCard.vue'
-import propertyCard from '../components/propertyCard.vue'
+import propertyCard from '../components/propertyCard.vue';
+import { LocalStorage, SessionStorage } from "quasar";
+
+
 // import store from '../store';
 
 export default {
@@ -129,15 +131,30 @@ export default {
   components: {
     propertyCard
   },
+  mounted(){
+
+    let arr = JSON.parse(LocalStorage.getItem("properties") || "[]");
+
+    if(this.demodata.length > arr.length){
+
+      LocalStorage.set("properties", JSON.stringify(this.demodata));
+    }else {
+      this.demodata = arr;
+    }
+    if(LocalStorage.has("bookedProperty")){
+      let arr2 = JSON.parse(LocalStorage.getItem("bookedProperty") || "[]");
+      this.bookedProperties = arr2;
+    }
+  },
   data(){
     return{
       showLogin: false,
-      showRegister: false,
+      showRegister: !SessionStorage.has('user'),
       showProperty: true,
       showAddProperty: false,
       showBookedProperties:false,
-      isLoggedIn: false,
-      userInfo: null,
+      isLoggedIn: SessionStorage.has('user'),
+      userInfo: SessionStorage.has('user')?SessionStorage.getItem("user"): null,
 
       pName: '',
       pAddress: '',
@@ -190,8 +207,10 @@ export default {
         description: this.pDescription,
         img: this.pImage
       }
+
       this.demodata.push(property)
       console.log(this.demodata)
+      LocalStorage.set("properties", JSON.stringify(this.demodata));
       this.showAddProperty = false
     },
     registerUser(){
@@ -203,17 +222,25 @@ export default {
       }
       console.log(this.$store.state.users)
       this.$store.commit('registerUser', user)
+      let arr = JSON.parse(LocalStorage.getItem("user") || "[]");
+      // LocalStorage.remove("name");
+      arr.push(user);
+      LocalStorage.set("user", JSON.stringify(arr));
       this.showRegister = false
     },
     loginUser(){
-      const users = this.$store.state.users;
+      // const users = this.$store.state.users;
+      const users = JSON.parse(LocalStorage.getItem("user") || "[]");
+
       console.log(users)
-      const check = users.find(element => element.email == this.uEmail && element.password == this.uPassword);
-      console.log(check)
-      if(check){
+      const index = users.findIndex(element => element.email == this.uEmail && element.password == this.uPassword);
+      
+      console.log(index)
+      if(index !== -1){
+        SessionStorage.set("user", users[index]);
         this.isLoggedIn = true;
         this.showLogin = false;
-        this.userInfo = check;
+        this.userInfo = users[index];
       }
     },
     bookProperty(property){
@@ -226,6 +253,14 @@ export default {
       }
       console.log(bookedProperty)
       this.bookedProperties.push(bookedProperty)
+      console.log('booked properties',this.bookedProperties);
+      LocalStorage.set("bookedProperty", JSON.stringify(this.bookedProperties));
+
+    },
+    logOut(){
+      
+      SessionStorage.remove("user");
+      window.location.reload();
     }
   }
 }
