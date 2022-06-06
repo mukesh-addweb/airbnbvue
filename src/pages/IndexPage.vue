@@ -45,6 +45,7 @@ export default defineComponent({
       loading: false,
       options: ["My Properties", "My Booked properties", "All"],
       filter: ref(null),
+      bookedProperties: ref([])
       // data: [{ title: "good looking house", owner: "some rich guy" }],
     };
   },
@@ -56,7 +57,13 @@ export default defineComponent({
 
       let i = allprops.findIndex((x) => x.title === property.title);
       allprops[i].tenant = SessionStorage.getItem("user").email;
+      allprops[i].id = SessionStorage.getItem("user").id;
       LocalStorage.set("property", JSON.stringify(allprops));
+      let bookedProperty = {
+        bookingId : allprops[i].title+allProps[i].id,
+        userId: allprops[i].id,
+        property: allprops[i]
+      }
       window.location.reload();
     },
   },
